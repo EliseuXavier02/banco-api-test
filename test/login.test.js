@@ -1,17 +1,21 @@
 const request = require('supertest');
 const { expect } = require('chai')
 require('dotenv').config()
+const postLogin = require('../fixtures/postLogin.json')
 
 describe('Login', () => {
     describe('POST / login', () =>{
+        let bodyLogin
+
+        beforeEach(async () => {
+            bodyLogin = { ...postLogin }
+        })
+
         it('Deve retornar 200 com token em string ao usar credencias validas', async () => {
             const response = await request(process.env.BASE_URL)
                 .post('/login')
                 .set('Content-Type', 'application/json')
-                .send({
-                    'username': 'julio.lima',
-                    'senha': '123456'
-                })
+                .send(bodyLogin)
                 
                 
                 expect(response.status).to.equal(200);
@@ -19,13 +23,11 @@ describe('Login', () => {
         })
 
         it('Deve retornar 400 com error em string contendo Usuário e senha são obrigatórios ao nao informar username ou senha', async () => {
+            bodyLogin.username = ''
             const response = await request(process.env.BASE_URL)
                 .post('/login')
                 .set('Content-Type', 'application/json')
-                .send({
-                    'username': 'julio.lima',
-                    'senha': ''
-                })
+                .send(bodyLogin)
                 
                 expect(response.status).to.equal(400);
                 expect(response.body.error).to.be.a('string');
@@ -33,13 +35,11 @@ describe('Login', () => {
         })
 
         it('Deve retornar 401 com error em string contendo Usuário ou senha inválidos ao  informar credencias invalidas', async () => {
+            bodyLogin.username = 'usuarioInvalido'
             const response = await request(process.env.BASE_URL)
                 .post('/login')
                 .set('Content-Type', 'application/json')
-                .send({
-                    'username': 'julio.lima',
-                    'senha': '11111'
-                })
+                .send(bodyLogin)
                 
                 expect(response.status).to.equal(401);
                 expect(response.body.error).to.be.a('string');
@@ -50,10 +50,7 @@ describe('Login', () => {
             const response = await request(process.env.BASE_URL)
                 .get('/login')
                 .set('Content-Type', 'application/json')
-                .send({
-                    'username': 'julio.lima',
-                    'senha': '123456'
-                })
+                .send(bodyLogin)
                 
                 expect(response.status).to.equal(405);
                 expect(response.body.error).to.be.a('string');
