@@ -5,8 +5,13 @@ const {obertToken} = require('../helpers/autenticacao')
 
 describe('Transferência', () => {
     describe('POST / transferencias', () =>{
+        let token
+
+        beforeEach(async () => {
+            token = await obertToken('julio.lima', '123456')
+        }) 
+
         it('Deve retornar suceso com 201 quando o valor da transferencia for maior ou igual que R$ 10,00', async () => {
-            const token = await obertToken('julio.lima', '123456')
 
             const response = await request(process.env.BASE_URL)
                 .post('/transferencias')
@@ -22,7 +27,6 @@ describe('Transferência', () => {
         })
 
         it('Deve retornar erro com 422 quando o valor da transferencia for menor que R$ 10,00', async () => {
-             const token = await obertToken('julio.lima', '123456')
 
             const response = await request(process.env.BASE_URL)
                 .post('/transferencias')
